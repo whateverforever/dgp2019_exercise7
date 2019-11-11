@@ -44,8 +44,8 @@ void MeshProcessing::remesh(const REMESHING_TYPE& remeshing_type,
     for (int i = 0; i < num_iterations; ++i) {
         split_long_edges();
         collapse_short_edges();
-        equalize_valences();
-        tangential_relaxation();
+        //equalize_valences();
+        //tangential_relaxation();
     }
 }
 
@@ -187,16 +187,20 @@ void MeshProcessing::collapse_short_edges()
                 float length_actual = mesh_.edge_length(*e_it);
 
                 if (length_actual < 4 / 5 * length_desired) {
+                    if(mesh_.is_boundary(vertA) || mesh_.is_boundary(vertB)) {
+                        continue;
+                    }
+                    
                     Mesh::Halfedge heA = mesh_.halfedge(*e_it, 0);
                     Mesh::Halfedge heB = mesh_.halfedge(*e_it, 1);
 
                     bool collapseA = true;
                     bool collapseB = true;
 
-                    if (mesh_.is_boundary(heA) || !mesh_.is_collapse_ok(heA)) {
+                    if (!mesh_.is_collapse_ok(heA)) {
                         collapseA = false;
                     }
-                    if (mesh_.is_boundary(heB) || !mesh_.is_collapse_ok(heB)) {
+                    if (!mesh_.is_collapse_ok(heB)) {
                         collapseB = false;
                     }
 
@@ -208,16 +212,20 @@ void MeshProcessing::collapse_short_edges()
                         int valenceA = mesh_.valence(vertA);
                         int valenceB = mesh_.valence(vertB);
 
-                        Mesh::Vertex first = vertB;
-                        Mesh::Vertex second = vertA;
+                        Mesh::Vertex first = vertA;
+                        Mesh::Vertex second = vertB;
 
-                        if (valenceA < valenceB) {
-                            first = vertA;
-                            second = vertB;
+                        if (valenceB < valenceA) {
+                            first = vertB;
+                            second = vertA;
                         }
 
                         Mesh::Halfedge he_to_be_collapsed = mesh_.find_halfedge(first, second);
                         mesh_.collapse(he_to_be_collapsed);
+                    }
+
+                    if (collapseA || collapseB) {
+                        finished = false;
                     }
                 }
             }
