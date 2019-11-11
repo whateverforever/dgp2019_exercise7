@@ -130,6 +130,12 @@ void MeshProcessing::split_long_edges()
             Mesh::Vertex vertB = mesh_.vertex(e, 1);
 
             float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
+
+            float length_actual = mesh_.edge_length(e);
+
+            if (length_actual > 4 / 3 * length_desired) {
+                Point midPoint = (mesh_.position(vertA) + mesh_.position(vertB)) / 2;
+            }
         }
     }
 }
