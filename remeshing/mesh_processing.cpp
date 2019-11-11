@@ -124,7 +124,6 @@ void MeshProcessing::split_long_edges()
         //  If any edge has been processed this way, do not leave the outer iteration (i.e. set "finished" to false)
         // ------------- IMPLEMENT HERE ---------
 
-        // Loop through all edges
         for (auto e : mesh_.edges()) {
             Mesh::Vertex vertA = mesh_.vertex(e, 0);
             Mesh::Vertex vertB = mesh_.vertex(e, 1);
@@ -179,6 +178,14 @@ void MeshProcessing::collapse_short_edges()
                 //		Collapse the halfedge, using mesh_.collapse( [Halfedge] )
                 // Stay in the loop running until no collapse has been done (use the finished variable)
                 // ------------- IMPLEMENT HERE ---------
+                Mesh::Vertex vertA = mesh_.vertex(*e_it, 0);
+                Mesh::Vertex vertB = mesh_.vertex(*e_it, 1);
+
+                float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
+                float length_actual = mesh_.edge_length(*e_it);
+
+                if (length_actual < 4 / 5 * length_desired) {
+                }
             }
         }
     }
