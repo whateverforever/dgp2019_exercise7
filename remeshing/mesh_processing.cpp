@@ -135,6 +135,19 @@ void MeshProcessing::split_long_edges()
 
             if (length_actual > 4 / 3 * length_desired) {
                 Point midPoint = (mesh_.position(vertA) + mesh_.position(vertB)) / 2;
+
+                Mesh::Vertex v_new = mesh_.add_vertex(midPoint);
+
+                Point normalA = normals[vertA];
+                Point normalB = normals[vertB];
+
+                Point normal_interpolated = (normalA + normalB) / 2;
+                normals[v_new] = normal_interpolated;
+                target_length[v_new] = length_desired;
+
+                mesh_.split(e, v_new);
+
+                finished = false;
             }
         }
     }
