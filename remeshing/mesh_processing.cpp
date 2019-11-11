@@ -123,6 +123,14 @@ void MeshProcessing::split_long_edges()
         //		split the edge with this vertex: mesh_.split( [Edge], [Vertex] )
         //  If any edge has been processed this way, do not leave the outer iteration (i.e. set "finished" to false)
         // ------------- IMPLEMENT HERE ---------
+
+        // Loop through all edges
+        for (auto e : mesh_.edges()) {
+            Mesh::Vertex vertA = mesh_.vertex(e, 0);
+            Mesh::Vertex vertB = mesh_.vertex(e, 1);
+
+            float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
+        }
     }
 }
 
