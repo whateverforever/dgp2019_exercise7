@@ -175,7 +175,7 @@ void MeshProcessing::collapse_short_edges()
                 //		Check if halfedge connects a boundary vertex with a non-boundary vertex, using
                 //      mesh_.is_boundary( [Vertex] ). If so, don't collapse that halfedge.
                 //		Check if halfedges are collapsible using mesh_.is_collapse_ok( [halfedge] )
-                //		Select the halfedge to be collapsed if at least one halfedge can be collapsed
+                //		Select the halfedge (edge?!) to be collapsed if at least one halfedge can be collapsed
                 //      (if both are, collapse lower valence vertex into higher valence vertex, use mesh_.valence([Vertex]) ).
                 //		Collapse the halfedge, using mesh_.collapse( [Halfedge] )
                 // Stay in the loop running until no collapse has been done (use the finished variable)
@@ -190,9 +190,23 @@ void MeshProcessing::collapse_short_edges()
                     Mesh::Halfedge heA = mesh_.halfedge(*e_it, 0);
                     Mesh::Halfedge heB = mesh_.halfedge(*e_it, 1);
 
-                    std::vector<Mesh::Halfedge> halfedges({ heA, heB });
+                    bool collapseA = true;
+                    bool collapseB = true;
 
-                    for (auto he : halfedges) {
+                    if (mesh_.is_boundary(heA) || !mesh_.is_collapse_ok(heA)) {
+                        collapseA = false;
+                    }
+                    if (mesh_.is_boundary(heB) || !mesh_.is_collapse_ok(heB)) {
+                        collapseB = false;
+                    }
+
+                    if (collapseA && !collapseB) {
+                        mesh_.collapse(heA);
+                    } else if (!collapseA && collapseB) {
+                        mesh_.collapse(heB);
+                    } else if (collapseA && collapseB) {
+                        int valenceA = mesh_.valence(vertA);
+                        int valenceB = mesh_.valence(vertB);
                     }
                 }
             }
