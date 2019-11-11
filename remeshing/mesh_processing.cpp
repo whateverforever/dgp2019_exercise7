@@ -131,7 +131,7 @@ void MeshProcessing::split_long_edges()
             float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
             float length_actual = mesh_.edge_length(e);
 
-            if (length_actual > 4 / 3 * length_desired) {
+            if (length_actual > 4.0 / 3.0 * length_desired) {
                 Point midPoint = (mesh_.position(vertA) + mesh_.position(vertB)) / 2;
 
                 Mesh::Vertex v_new = mesh_.add_vertex(midPoint);
@@ -186,11 +186,11 @@ void MeshProcessing::collapse_short_edges()
                 float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
                 float length_actual = mesh_.edge_length(*e_it);
 
-                if (length_actual < 4 / 5 * length_desired) {
-                    if(mesh_.is_boundary(vertA) || mesh_.is_boundary(vertB)) {
+                if (length_actual < 4.0 / 5.0 * length_desired) {
+                    if (mesh_.is_boundary(vertA) || mesh_.is_boundary(vertB)) {
                         continue;
                     }
-                    
+
                     Mesh::Halfedge heA = mesh_.halfedge(*e_it, 0);
                     Mesh::Halfedge heB = mesh_.halfedge(*e_it, 1);
 
