@@ -172,9 +172,11 @@ void MeshProcessing::collapse_short_edges()
                 // INSERT CODE:
                 // Compute the desired length as the mean between the property "target_length" of two vertices of the edge
                 // If the edge is shorter than 4/5 of the desired length
-                //		Check if halfedge connects a boundary vertex with a non-boundary vertex, using  mesh_.is_boundary( [Vertex] ). If so, don't collapse that halfedge.
+                //		Check if halfedge connects a boundary vertex with a non-boundary vertex, using
+                //      mesh_.is_boundary( [Vertex] ). If so, don't collapse that halfedge.
                 //		Check if halfedges are collapsible using mesh_.is_collapse_ok( [halfedge] )
-                //		Select the halfedge to be collapsed if at least one halfedge can be collapsed (if both are, collapse lower valence vertex into higher valence vertex, use mesh_.valence([Vertex]) ).
+                //		Select the halfedge to be collapsed if at least one halfedge can be collapsed
+                //      (if both are, collapse lower valence vertex into higher valence vertex, use mesh_.valence([Vertex]) ).
                 //		Collapse the halfedge, using mesh_.collapse( [Halfedge] )
                 // Stay in the loop running until no collapse has been done (use the finished variable)
                 // ------------- IMPLEMENT HERE ---------
@@ -185,6 +187,13 @@ void MeshProcessing::collapse_short_edges()
                 float length_actual = mesh_.edge_length(*e_it);
 
                 if (length_actual < 4 / 5 * length_desired) {
+                    Mesh::Halfedge heA = mesh_.halfedge(*e_it, 0);
+                    Mesh::Halfedge heB = mesh_.halfedge(*e_it, 1);
+
+                    std::vector<Mesh::Halfedge> halfedges({ heA, heB });
+
+                    for (auto he : halfedges) {
+                    }
                 }
             }
         }
