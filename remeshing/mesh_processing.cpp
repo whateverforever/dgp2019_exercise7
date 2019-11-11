@@ -207,6 +207,17 @@ void MeshProcessing::collapse_short_edges()
                     } else if (collapseA && collapseB) {
                         int valenceA = mesh_.valence(vertA);
                         int valenceB = mesh_.valence(vertB);
+
+                        Mesh::Vertex first = vertB;
+                        Mesh::Vertex second = vertA;
+
+                        if (valenceA < valenceB) {
+                            first = vertA;
+                            second = vertB;
+                        }
+
+                        Mesh::Halfedge he_to_be_collapsed = mesh_.find_halfedge(first, second);
+                        mesh_.collapse(he_to_be_collapsed);
                     }
                 }
             }
