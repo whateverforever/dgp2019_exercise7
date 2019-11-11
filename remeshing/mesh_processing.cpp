@@ -130,7 +130,6 @@ void MeshProcessing::split_long_edges()
             Mesh::Vertex vertB = mesh_.vertex(e, 1);
 
             float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
-
             float length_actual = mesh_.edge_length(e);
 
             if (length_actual > 4 / 3 * length_desired) {
@@ -140,8 +139,8 @@ void MeshProcessing::split_long_edges()
 
                 Point normalA = normals[vertA];
                 Point normalB = normals[vertB];
-
                 Point normal_interpolated = (normalA + normalB) / 2;
+
                 normals[v_new] = normal_interpolated;
                 target_length[v_new] = length_desired;
 
