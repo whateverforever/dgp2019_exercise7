@@ -44,7 +44,7 @@ void MeshProcessing::remesh(const REMESHING_TYPE& remeshing_type,
     for (int i = 0; i < num_iterations; ++i) {
         split_long_edges();
         collapse_short_edges();
-        //equalize_valences();
+        equalize_valences();
         //tangential_relaxation();
     }
 }
@@ -256,11 +256,23 @@ void MeshProcessing::equalize_valences()
             if (!mesh_.is_boundary(*e_it)) {
                 // ------------- IMPLEMENT HERE ---------
                 //  Extract valences of the four vertices involved to an eventual flip.
-                //  Compute the sum of the squared valence deviances before flip (see assignment for a definition of the valence deviance!)
+                //  Compute the sum of the squared valence deviances before flip
+                // (see assignment for a definition of the valence deviance!)
                 //  Compute the sum of the squared valence deviances after an eventual flip
-                //  If valence deviance is decreased by a flip and the flip is possible (mesh_.is_flip_ok([Edge])), flip the edge: mesh_.flip([Edge])
+                //  If valence deviance is decreased by a flip and the flip is possible (mesh_.is_flip_ok([Edge])),
+                // flip the edge: mesh_.flip([Edge])
                 //  Stay in the loop until no flip has been performed (use the finished variable)
                 // ------------- IMPLEMENT HERE ---------
+                Mesh::Halfedge he_up = mesh_.halfedge(*e_it, 0);
+                Mesh::Halfedge he_down = mesh_.halfedge(*e_it, 1);
+
+                Mesh::Vertex v1 = mesh_.to_vertex(he_up);
+                Mesh::Vertex v2 = mesh_.to_vertex(mesh_.next_halfedge(he_up));
+
+                Mesh::Vertex v3 = mesh_.to_vertex(he_down);
+                Mesh::Vertex v4 = mesh_.to_vertex(mesh_.next_halfedge(he_down));
+
+                std::vector<Mesh::Vertex> four_verts({ v1, v2, v3, v4 });
             }
         }
     }
