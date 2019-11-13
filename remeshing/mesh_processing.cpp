@@ -272,7 +272,39 @@ void MeshProcessing::equalize_valences()
                 Mesh::Vertex v3 = mesh_.to_vertex(he_down);
                 Mesh::Vertex v4 = mesh_.to_vertex(mesh_.next_halfedge(he_down));
 
+                /*
+                   v1
+                  /| \
+                v4 | v2
+                 \ | /
+                  v3
+                */
+
                 std::vector<Mesh::Vertex> four_verts({ v1, v2, v3, v4 });
+                std::vector<int> valences;
+                float sum_deviations_before = 0.0;
+
+                for (auto v_i : four_verts) {
+                    int valence_i = mesh_.valence(v_i);
+
+                    sum_deviations_before += (valence_i - 6) * (valence_i - 6);
+                    valences.push_back(valence_i);
+                }
+
+                float sum_deviations_after = 0.0;
+                valences[0] -= 1;
+                valences[1] += 1;
+                valences[2] -= 1;
+                valences[3] += 1;
+
+                for (auto valence_i : valences) {
+                    sum_deviations_after += (valence_i - 6) * (valence_i - 6);
+                }
+
+                if (mesh_.is_flip_ok(*e_it) && sum_deviations_after < sum_deviations_before) {
+                    mesh_.flip(*e_it);
+                    finished = false;
+                }
             }
         }
     }
