@@ -45,7 +45,7 @@ void MeshProcessing::remesh(const REMESHING_TYPE& remeshing_type,
         split_long_edges();
         collapse_short_edges();
         equalize_valences();
-        //tangential_relaxation();
+        tangential_relaxation();
     }
 }
 
@@ -331,8 +331,27 @@ void MeshProcessing::tangential_relaxation()
                 // ------------- IMPLEMENT HERE ---------
                 //  Compute uniform Laplacian curvature approximation vector, see the slides for the simple formula
                 //  Compute the tangential component of the laplacian vector.
-                //  Store this tangential component of the laplacian vector in the "update" property, where it will be used in the subsequent code to move the vertex.
+                //  Store this tangential component of the laplacian vector in the "update" property,
+                // where it will be used in the subsequent code to move the vertex.
                 // ------------- IMPLEMENT HERE ---------
+                vv_c = mesh_.vertices(*v_it);
+                vv_end = vv_c;
+
+                laplace = Point(0.0, 0.0, 0.0);
+                Point p_i = mesh_.position(*v_it);
+
+                do {
+                    Point p_j = mesh_.position(*vv_c);
+                    laplace += p_j - p_i;
+                } while (++vv_c != vv_end);
+
+                float normalization = 1 / mesh_.valence(*v_it);
+                laplace *= normalization;
+
+                Point laplace_normal = dot(laplace, normals[*v_it]) * normals[*v_it];
+                Point laplace_tangent = laplace - laplace_normal;
+
+                update[*v_it] = laplace_tangent;
             }
         }
 
