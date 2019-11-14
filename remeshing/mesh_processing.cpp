@@ -180,27 +180,23 @@ void MeshProcessing::collapse_short_edges()
                 //		Collapse the halfedge, using mesh_.collapse( [Halfedge] )
                 // Stay in the loop running until no collapse has been done (use the finished variable)
                 // ------------- IMPLEMENT HERE ---------
-                Mesh::Vertex vertA = mesh_.vertex(*e_it, 0);
-                Mesh::Vertex vertB = mesh_.vertex(*e_it, 1);
+                Mesh::Halfedge heA = mesh_.halfedge(*e_it, 0);
+                Mesh::Halfedge heB = mesh_.halfedge(*e_it, 1);
+
+                Mesh::Vertex vertA = mesh_.to_vertex(heA);
+                Mesh::Vertex vertB = mesh_.to_vertex(heB);
 
                 float length_desired = (target_length[vertA] + target_length[vertB]) / 2;
                 float length_actual = mesh_.edge_length(*e_it);
 
                 if (length_actual < 4.0 / 5.0 * length_desired) {
-                    if (mesh_.is_boundary(vertA) || mesh_.is_boundary(vertB)) {
-                        continue;
-                    }
-
-                    Mesh::Halfedge heA = mesh_.halfedge(*e_it, 0);
-                    Mesh::Halfedge heB = mesh_.halfedge(*e_it, 1);
-
                     bool collapseA = true;
                     bool collapseB = true;
 
-                    if (!mesh_.is_collapse_ok(heA)) {
+                    if (!mesh_.is_collapse_ok(heA) || mesh_.is_boundary(vertB)) {
                         collapseA = false;
                     }
-                    if (!mesh_.is_collapse_ok(heB)) {
+                    if (!mesh_.is_collapse_ok(heB) || mesh_.is_boundary(vertA)) {
                         collapseB = false;
                     }
 
@@ -334,24 +330,23 @@ void MeshProcessing::tangential_relaxation()
                 //  Store this tangential component of the laplacian vector in the "update" property,
                 // where it will be used in the subsequent code to move the vertex.
                 // ------------- IMPLEMENT HERE ---------
-                vv_c = mesh_.vertices(*v_it);
-                vv_end = vv_c;
-
                 laplace = Point(0.0, 0.0, 0.0);
                 Point p_i = mesh_.position(*v_it);
+
+                vv_c = mesh_.vertices(*v_it);
+                vv_end = vv_c;
 
                 do {
                     Point p_j = mesh_.position(*vv_c);
                     laplace += p_j - p_i;
                 } while (++vv_c != vv_end);
 
-                float normalization = 1 / mesh_.valence(*v_it);
-                laplace *= normalization;
+                laplace /= mesh_.valence(*v_it);
 
                 Point laplace_normal = dot(laplace, normals[*v_it]) * normals[*v_it];
-                Point laplace_tangent = laplace - laplace_normal;
+                Point laplace_tangential = laplace - laplace_normal;
 
-                update[*v_it] = laplace_tangent;
+                update[*v_it] = laplace_tangential;
             }
         }
 
